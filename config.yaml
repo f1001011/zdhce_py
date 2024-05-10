@@ -1,0 +1,37 @@
+# 配置文件
+# apk存放路径文件夹（最好不要包含中文）
+apk_path: D:\lin\pyproject\duokong\apkfile
+
+# apk包名
+apk_name: tv.danmaku.bili
+
+# 设置并发启动的设备数量
+run_num: 10
+
+# 操作步骤： click：点击(坐标)，sleep：等待时间(秒) ，swipe：滑动屏幕(坐标)
+action:
+  step0:
+    sleep: 2
+    click: 360, 900
+  step1:
+    sleep: 1
+    click: 439,195
+  step2:
+    sleep: 1
+    click: 545,195
+  step3:
+    sleep: 1
+    click: 220,195
+  step4:
+    sleep: 1
+    click: 334,195
+  step5:
+    sleep: 1
+    swipe: 460, 330, 320, 330
+  step6:
+    sleep: 1
+    click: 349, 293
+  step7:
+    sleep: 2
+    press: BACK
+
