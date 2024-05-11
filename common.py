@@ -55,7 +55,7 @@ class IpProxy:
 
     def check_proxy_enabled(self, ip, port):
         self.set_adb_proxy(ip, port)
-        logger.info("等待代理设置时间5秒")
+        logger.info("等待代理设置时间2秒")
         time.sleep(2)
         self.check_adb_proxy()
 
@@ -63,13 +63,13 @@ class IpProxy:
         try:
             self.d.install(apk_path)
         except Exception as e:
-            logger.info("安装失败")
+            logger.info("安装失败", e)
 
     def apk_uninstall(self, apk_name):
         try:
             self.d.uninstall(apk_name)
         except Exception as e:
-            logger.info("卸载失败")
+            logger.info("卸载失败", e)
 
     def check_apk_install(self):
         try:
@@ -82,7 +82,7 @@ class IpProxy:
                 else:
                     time.sleep(1)
         except Exception as e:
-            logger.info("未查询到app")
+            logger.info("未查询到app", e)
 
     def press_back(self):
         self.d.keyevent("BACK")
@@ -148,36 +148,27 @@ def start_adb():
     logger.info(s)
 
 
-def get_ip(num):
-    api_url = f"https://www.kdlapi.com/api/getdps?secret_id=o1fjh1re9o28876h7c08&signature=oxf0n0g59h7wcdyvz2uo68ph2s&num={num}&format=json&sep=1"
-    proxy_ip = requests.get(api_url).json()['data']['proxy_list']
-    return proxy_ip
-
-
 def check_ip(ipp):
     proxies = {'http': ipp, 'https': ipp}
-    url = "http://www.ip138.com"
+    url = "http://www.bilibili.com"
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'
-    }
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'}
     try:
-        response = requests.get(url, headers=headers, proxies=proxies, timeout=4)
+        response = requests.get(url, headers=headers, proxies=proxies, timeout=5)
         print(response.status_code)
         if response.status_code == 200:
             return True
         else:
             return False
     except Exception as e:
-        print(f"请求失败，代理IP无效！")
+        print(f"请求失败，代理IP无效！", e)
         return False
 
 
 def get_proxies():
-    urls = "https://api.proxyscrape.com/v3/free-proxy-list/get?request=getproxies&protocol=http&skip=1&proxy_format=protocolipport&format=json&limit=15&timeout=3000"
-    url = "https://api.proxyscrape.com/v3/free-proxy-list/get?request=displayproxies&country=cn&protocol=http&proxy_format=ipport&format=json&timeout=3000"
+    urls = "https://api.proxyscrape.com/v3/free-proxy-list/get?request=getproxies&protocol=http&skip=1&proxy_format=protocolipport&format=json&limit=15&timeout=5000"
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'
-    }
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'}
     r = requests.get(urls, headers=headers)
     ip_list = []
     a1 = r.json()['proxies']

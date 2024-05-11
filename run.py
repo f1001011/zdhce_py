@@ -42,6 +42,8 @@ def get_ip_list(plist, dev_num):
 
 if __name__ == "__main__":
     start_adb()
+    logger.error("等待启动")
+    time.sleep(5)
     s1 = devices_list()
     if not s1:
         logger.error("没有连接任何设备")
@@ -66,12 +68,12 @@ if __name__ == "__main__":
             for i in f:
                 if check_ip(i) is True:
                     ip_lists.append(i)
-            logger.info(f"检测结果可用的代理：{ip_lists}")
+            logger.info(f"检测后可用的代理：{ip_lists}")
             apks1 = get_apk_list(len(s))
             proxys1 = get_ip_list(ip_lists, len(s))
             for ix in proxys1:
                 if check_ip(ix) is True:
-                    logger.info("再次验证通过：", ix)
+                    logger.info(f"再次验证通过：{ix}")
             dir_list1 = get_apk(directory_name)
             if len(dir_list1) < 1:
                 logger.info("没有可用的apk文件，全部运行完成")
