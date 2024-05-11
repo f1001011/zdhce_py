@@ -156,7 +156,7 @@ def get_ip(num):
 
 def check_ip(ipp):
     proxies = {'http': ipp, 'https': ipp}
-    url = "http://www.bilibili.com"
+    url = "http://www.ip138.com"
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'
     }
