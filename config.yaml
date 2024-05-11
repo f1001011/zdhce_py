@@ -11,27 +11,27 @@ run_num: 10
 # 操作步骤： click：点击(坐标)，sleep：等待时间(秒) ，swipe：滑动屏幕(坐标)
 action:
   step0:
-    sleep: 2
+    sleep: 5
     click: 360, 900
   step1:
-    sleep: 1
+    sleep: 30
     click: 439,195
   step2:
-    sleep: 1
+    sleep: 10
     click: 545,195
   step3:
-    sleep: 1
+    sleep: 10
     click: 220,195
   step4:
-    sleep: 1
+    sleep: 10
     click: 334,195
   step5:
-    sleep: 1
+    sleep: 10
     swipe: 460, 330, 320, 330
   step6:
-    sleep: 1
+    sleep: 10
     click: 349, 293
   step7:
-    sleep: 2
+    sleep: 30
     press: BACK
 

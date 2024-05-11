@@ -1,6 +1,8 @@
 # coding=utf-8
 import random
 import time
+
+import requests
 from adbutils import adb
 import yaml
 import os
@@ -41,15 +43,6 @@ class IpProxy:
     def __init__(self, devices):
         self.d = adb.device(serial=devices)
 
-    def check_enabled(self):
-        re = self.d.shell("ping -c 1 www.baidu.com")
-        if "0 received" in re:
-            logger.info("代理不可用")
-            return False
-        else:
-            logger.info("代理可用")
-            return True
-
     def set_adb_proxy(self, ip, port):
         self.d.shell(f"settings put global http_proxy {ip}:{port}")
 
@@ -62,6 +55,7 @@ class IpProxy:
 
     def check_proxy_enabled(self, ip, port):
         self.set_adb_proxy(ip, port)
+        logger.info("等待代理设置时间5秒")
         time.sleep(2)
         self.check_adb_proxy()
 
@@ -101,28 +95,28 @@ class IpProxy:
 
 
 def get_apk_path():
-    with open(r'../u2_opt/config.yaml', 'r', encoding='utf-8') as f:
+    with open(r'./config.yaml', 'r', encoding='utf-8') as f:
         result = yaml.load(f.read(), Loader=yaml.FullLoader)
     s = result['apk_path']
     return s
 
 
 def get_run_num():
-    with open(r'../u2_opt/config.yaml', 'r', encoding='utf-8') as f:
+    with open(r'./config.yaml', 'r', encoding='utf-8') as f:
         result = yaml.load(f.read(), Loader=yaml.FullLoader)
     s = result['run_num']
     return s
 
 
 def get_apk_name():
-    with open(r'../u2_opt/config.yaml', 'r', encoding='utf-8') as f:
+    with open(r'./config.yaml', 'r', encoding='utf-8') as f:
         result = yaml.load(f.read(), Loader=yaml.FullLoader)
     s = result['apk_name']
     return s
 
 
 def get_action():
-    with open(r'../u2_opt/config.yaml', 'r', encoding='utf-8') as f:
+    with open(r'./config.yaml', 'r', encoding='utf-8') as f:
         result = yaml.load(f.read(), Loader=yaml.FullLoader)
     s = result['action']
     return s
@@ -152,3 +146,43 @@ def get_proxy(proxy_list: list):
 def start_adb():
     s = os.system("adb start-server")
     logger.info(s)
+
+
+def get_ip(num):
+    api_url = f"https://www.kdlapi.com/api/getdps?secret_id=o1fjh1re9o28876h7c08&signature=oxf0n0g59h7wcdyvz2uo68ph2s&num={num}&format=json&sep=1"
+    proxy_ip = requests.get(api_url).json()['data']['proxy_list']
+    return proxy_ip
+
+
+def check_ip(ipp):
+    proxies = {'http': ipp, 'https': ipp}
+    url = "http://www.bilibili.com"
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'
+    }
+    try:
+        response = requests.get(url, headers=headers, proxies=proxies, timeout=4)
+        print(response.status_code)
+        if response.status_code == 200:
+            return True
+        else:
+            return False
+    except Exception as e:
+        print(f"请求失败，代理IP无效！")
+        return False
+
+
+def get_proxies():
+    urls = "https://api.proxyscrape.com/v3/free-proxy-list/get?request=getproxies&protocol=http&skip=1&proxy_format=protocolipport&format=json&limit=15&timeout=3000"
+    url = "https://api.proxyscrape.com/v3/free-proxy-list/get?request=displayproxies&country=cn&protocol=http&proxy_format=ipport&format=json&timeout=3000"
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'
+    }
+    r = requests.get(urls, headers=headers)
+    ip_list = []
+    a1 = r.json()['proxies']
+    for i in a1:
+        z = i['proxy']
+        x = z.split(r"://")[1]
+        ip_list.append(x)
+    return ip_list
