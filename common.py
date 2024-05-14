@@ -1,6 +1,7 @@
 # coding=utf-8
 import random
 import time
+import requests
 from adbutils import adb
 import yaml
 import os
@@ -41,27 +42,22 @@ class IpProxy:
     def __init__(self, devices):
         self.d = adb.device(serial=devices)
 
-    def check_enabled(self):
-        re = self.d.shell("ping -c 1 www.baidu.com")
-        if "0 received" in re:
-            logger.info("代理不可用")
-            return False
-        else:
-            logger.info("代理可用")
-            return True
-
     def set_adb_proxy(self, ip, port):
         self.d.shell(f"settings put global http_proxy {ip}:{port}")
+
+    def disable_adb_proxy(self):
+        self.d.shell("settings put global http_proxy :0")
 
     def check_adb_proxy(self):
         result = self.d.shell("settings get global http_proxy")
         if "null" in result:
-            logger.info(f"代理 IP:{result} 未设置成功")
+            logger.info(f"代理 IP:{result} 设置失败")
         else:
             logger.info(f"代理 IP:{result} 设置成功")
 
     def check_proxy_enabled(self, ip, port):
         self.set_adb_proxy(ip, port)
+        logger.info("等待代理设置时间2秒")
         time.sleep(2)
         self.check_adb_proxy()
 
@@ -69,13 +65,13 @@ class IpProxy:
         try:
             self.d.install(apk_path)
         except Exception as e:
-            logger.info("安装失败")
+            logger.info("安装失败", e)
 
     def apk_uninstall(self, apk_name):
         try:
             self.d.uninstall(apk_name)
         except Exception as e:
-            logger.info("卸载失败")
+            logger.info("卸载失败", e)
 
     def check_apk_install(self):
         try:
@@ -88,7 +84,7 @@ class IpProxy:
                 else:
                     time.sleep(1)
         except Exception as e:
-            logger.info("未查询到app")
+            logger.info("未查询到app", e)
 
     def press_back(self):
         self.d.keyevent("BACK")
@@ -101,28 +97,42 @@ class IpProxy:
 
 
 def get_apk_path():
-    with open(r'../u2_opt/config.yaml', 'r', encoding='utf-8') as f:
+    with open(r'./config.yaml', 'r', encoding='utf-8') as f:
         result = yaml.load(f.read(), Loader=yaml.FullLoader)
     s = result['apk_path']
     return s
 
 
+def get_ld_path():
+    with open(r'./config.yaml', 'r', encoding='utf-8') as f:
+        result = yaml.load(f.read(), Loader=yaml.FullLoader)
+    s = result['ld_path']
+    return s
+
+
+def get_proxy_switch():
+    with open(r'./config.yaml', 'r', encoding='utf-8') as f:
+        result = yaml.load(f.read(), Loader=yaml.FullLoader)
+    s = result['proxy_switch']
+    return s
+
+
 def get_run_num():
-    with open(r'../u2_opt/config.yaml', 'r', encoding='utf-8') as f:
+    with open(r'./config.yaml', 'r', encoding='utf-8') as f:
         result = yaml.load(f.read(), Loader=yaml.FullLoader)
     s = result['run_num']
     return s
 
 
 def get_apk_name():
-    with open(r'../u2_opt/config.yaml', 'r', encoding='utf-8') as f:
+    with open(r'./config.yaml', 'r', encoding='utf-8') as f:
         result = yaml.load(f.read(), Loader=yaml.FullLoader)
     s = result['apk_name']
     return s
 
 
 def get_action():
-    with open(r'../u2_opt/config.yaml', 'r', encoding='utf-8') as f:
+    with open(r'./config.yaml', 'r', encoding='utf-8') as f:
         result = yaml.load(f.read(), Loader=yaml.FullLoader)
     s = result['action']
     return s
@@ -151,4 +161,42 @@ def get_proxy(proxy_list: list):
 
 def start_adb():
     s = os.system("adb start-server")
-    logger.info(s)
+    if s == 0:
+        logger.info("adb启动成功")
+    else:
+        logger.info("adb启动失败")
+
+
+def check_ip(ipp):
+    proxies = {'http': ipp, 'https': ipp}
+    url = "http://www.bilibili.com"
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'}
+    try:
+        response = requests.get(url, headers=headers, proxies=proxies, timeout=1)
+        logger.info(response.status_code)
+        return True
+        # if response.status_code == 200:
+        #     return True
+        # else:
+        #     return False
+    except Exception as e:
+        logger.warning(f"请求失败，代理IP无效！", e)
+        return False
+
+
+def get_proxies():
+    urls = "https://api.proxyscrape.com/v3/free-proxy-list/get?request=getproxies&protocol=http&skip=1&proxy_format=protocolipport&format=json&limit=15&timeout=5000"
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'}
+    try:
+        r = requests.get(urls, headers=headers)
+        ip_list = []
+        a1 = r.json()['proxies']
+        for i in a1:
+            z = i['proxy']
+            x = z.split(r"://")[1]
+            ip_list.append(x)
+        return ip_list
+    except Exception as e:
+        logger.error(f"代理IP获取失败！{e}")
