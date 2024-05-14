@@ -10,7 +10,7 @@ apk_name: tv.danmaku.bili
 ld_path: D:\leidian\LDPlayer9
 
 # 使用代理开关
-proxy_switch: false
+proxy_switch: ture
 
 # 设置启动的设备数量
 run_num: 10

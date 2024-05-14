@@ -51,13 +51,12 @@ class IpProxy:
     def check_adb_proxy(self):
         result = self.d.shell("settings get global http_proxy")
         if "null" in result:
-            logger.info(f"代理 IP:{result} 设置失败")
+            logger.info(f"代理设置失败")
         else:
-            logger.info(f"代理 IP:{result} 设置成功")
+            logger.info(f"代理设置成功")
 
     def check_proxy_enabled(self, ip, port):
         self.set_adb_proxy(ip, port)
-        logger.info("等待代理设置时间2秒")
         time.sleep(2)
         self.check_adb_proxy()
 
@@ -72,19 +71,6 @@ class IpProxy:
             self.d.uninstall(apk_name)
         except Exception as e:
             logger.info("卸载失败", e)
-
-    def check_apk_install(self):
-        try:
-            s = self.d.list_packages()
-            name = get_apk_name()
-            for i in range(10):
-                if name in s:
-                    logger.info("安装成功")
-                    break
-                else:
-                    time.sleep(1)
-        except Exception as e:
-            logger.info("未查询到app", e)
 
     def press_back(self):
         self.d.keyevent("BACK")
@@ -150,7 +136,7 @@ def remove_apk(apk_path: str):
     try:
         apk_name = apk_path.split("\\")[-1]
         os.remove(apk_path)
-        logger.info(f"{apk_name},删除完成")
+        logger.info(f"{apk_name}删除完成")
     except Exception as e:
         logger.info(e)
 
@@ -162,9 +148,9 @@ def get_proxy(proxy_list: list):
 def start_adb():
     s = os.system("adb start-server")
     if s == 0:
-        logger.info("adb启动成功")
+        logger.info("启动成功")
     else:
-        logger.info("adb启动失败")
+        logger.info("启动失败")
 
 
 def check_ip(ipp):
@@ -174,19 +160,17 @@ def check_ip(ipp):
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'}
     try:
         response = requests.get(url, headers=headers, proxies=proxies, timeout=1)
-        logger.info(response.status_code)
-        return True
-        # if response.status_code == 200:
-        #     return True
-        # else:
-        #     return False
+        if response.status_code == 200:
+            return True
+        else:
+            return False
     except Exception as e:
         logger.warning(f"请求失败，代理IP无效！", e)
         return False
 
 
 def get_proxies():
-    urls = "https://api.proxyscrape.com/v3/free-proxy-list/get?request=getproxies&protocol=http&skip=1&proxy_format=protocolipport&format=json&limit=15&timeout=5000"
+    urls = "https://api.proxyscrape.com/v3/free-proxy-list/get?request=getproxies&protocol=http&skip=1&proxy_format=protocolipport&format=json&limit=20&timeout=5000"
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'}
     try:
@@ -199,4 +183,5 @@ def get_proxies():
             ip_list.append(x)
         return ip_list
     except Exception as e:
-        logger.error(f"代理IP获取失败！{e}")
+        logger.error(f"代理IP获取失败")
+        return []

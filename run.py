@@ -18,11 +18,7 @@ def run(devices, proxys, apks):
     logger.info("开始安装apk，等稍等！")
     ad.apk_install(apk_path)
     logger.info("apk安装完成！")
-    try:
-        remove_apk(apk_path)
-    except Exception as e:
-        logger.error(e)
-    ad.check_apk_install()
+    remove_apk(apk_path)
     ad.d.app_start(apk_package)
     fuc_process(action, ad)
     time.sleep(1)
@@ -42,11 +38,11 @@ def get_ip_list(plist, dev_num):
 
 if __name__ == "__main__":
     start_adb()
-    logger.info("马上开始")
+    logger.info("开始")
     time.sleep(5)
     s1 = devices_list()
     if not s1:
-        logger.error("没有连接任何设备")
+        logger.error("没有设备")
         time.sleep(5)
     else:
         for x in range(5):
@@ -68,7 +64,9 @@ if __name__ == "__main__":
                 f = get_proxies()
                 logger.info(f"代理列表：{f}")
                 ip_lists = []
-                try:
+                if len(f) == 0:
+                    logger.info("请检查代理")
+                else:
                     for i in f:
                         if check_ip(i) is True:
                             ip_lists.append(i)
@@ -77,30 +75,24 @@ if __name__ == "__main__":
                     proxys1 = get_ip_list(ip_lists, len(s))
                     dir_list1 = get_apk(directory_name)
                     if len(dir_list1) < 1:
-                        logger.info("没有可用的apk文件，全部运行完成")
+                        logger.info("全部运行完成")
                         time.sleep(5)
                         break
-                    elif len(dir_list1) == 1:
-                        run(s[0], proxys1[-1], apks1[-1])
                     else:
                         params = list(zip(s, proxys1, apks1))
                         with multiprocessing.Pool() as pool:
                             pool.starmap(run, params)
-                except Exception as e:
-                    logger.error("请求代理接口错误，请检查接口是否可用")
+
             else:
-                logger.info("无代理模式")
-                original_list = [":0"]
+                logger.info("代理模式关闭")
                 num_duplicates = len(s)
                 apks1 = get_apk_list(len(s))
-                proxys1 = [x for x in original_list for _ in range(num_duplicates)]
+                proxys1 = [x for x in [":0"] for _ in range(num_duplicates)]
                 dir_list1 = get_apk(directory_name)
                 if len(dir_list1) < 1:
-                    logger.info("没有可用的apk文件，全部运行完成")
+                    logger.info("全部运行完成")
                     time.sleep(5)
                     break
-                elif len(dir_list1) == 1:
-                    run(s[0], proxys1[-1], apks1[-1])
                 else:
                     params = list(zip(s, proxys1, apks1))
                     with multiprocessing.Pool() as pool:
