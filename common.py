@@ -103,6 +103,19 @@ def get_proxy_switch():
     return s
 
 
+def s_ld(path, count):
+    lists = os.popen(f"{path}\\ldconsole.exe list").read().split("\n")
+    num = len(lists) - 1
+    if count > num:
+        for i in range(1, num):
+            os.popen(f"{path}\\ldconsole.exe launch --index {i}")
+            time.sleep(1)
+    else:
+        for i in range(1, count+1):
+            os.popen(f"{path}\\ldconsole.exe launch --index {i}")
+            time.sleep(1)
+
+
 def get_run_num():
     with open(r'./config.yaml', 'r', encoding='utf-8') as f:
         result = yaml.load(f.read(), Loader=yaml.FullLoader)
@@ -159,18 +172,19 @@ def check_ip(ipp):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'}
     try:
-        response = requests.get(url, headers=headers, proxies=proxies, timeout=1)
-        if response.status_code == 200:
-            return True
-        else:
-            return False
+        response = requests.get(url, headers=headers, proxies=proxies)
+        return True
+        # if response.status_code == 200:
+        #     return True
+        # else:
+        #     return False
     except Exception as e:
         logger.warning(f"请求失败，代理IP无效！", e)
         return False
 
 
 def get_proxies():
-    urls = "https://api.proxyscrape.com/v3/free-proxy-list/get?request=getproxies&protocol=http&skip=1&proxy_format=protocolipport&format=json&limit=20&timeout=5000"
+    urls = "https://api.proxyscrape.com/v3/free-proxy-list/get?request=getproxies&protocol=http&skip=1&proxy_format=protocolipport&format=json&limit=15&timeout=5000"
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'}
     try:

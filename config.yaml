@@ -1,7 +1,7 @@
 # 配置文件
 
 # apk存放路径文件夹（不要含有中文路径）
-apk_path: D:\lin\pyproject\duokong\apkfile
+apk_path: D:\duokong\apkfile
 
 # apk包名
 apk_name: tv.danmaku.bili
@@ -10,10 +10,10 @@ apk_name: tv.danmaku.bili
 ld_path: D:\leidian\LDPlayer9
 
 # 使用代理开关
-proxy_switch: ture
+proxy_switch: false
 
 # 设置启动的设备数量
-run_num: 10
+run_num: 2
 
 # 操作步骤： click：点击(坐标)，sleep：等待时间(秒) ，swipe：滑动屏幕(坐标)
 action:

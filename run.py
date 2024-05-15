@@ -1,11 +1,14 @@
 import multiprocessing
 import time
-from common import IpProxy, fuc_process, logger, devices_list, start_adb, get_run_num, get_proxies, check_ip
-from common import get_apk, get_apk_path, get_action, get_apk_name, remove_apk, get_proxy_switch
+from common import IpProxy, fuc_process, logger, devices_list, start_adb, get_run_num, get_proxies, check_ip, \
+    get_ld_path
+from common import get_apk, get_apk_path, get_action, get_apk_name, remove_apk, get_proxy_switch, s_ld
 
 directory_name = get_apk_path()
 action = get_action()
 apk_package = get_apk_name()
+ldpath = get_ld_path()
+ldnum = get_run_num()
 
 
 def run(devices, proxys, apks):
@@ -37,6 +40,8 @@ def get_ip_list(plist, dev_num):
 
 
 if __name__ == "__main__":
+    s_ld(ldpath, ldnum)
+    time.sleep(30)
     start_adb()
     logger.info("开始")
     time.sleep(5)
@@ -50,19 +55,17 @@ if __name__ == "__main__":
                 s1 = devices_list()
                 time.sleep(1)
             else:
-                logger.info(f"设备列表：{s1}")
                 break
         run_num = get_run_num()
         if len(s1) < run_num:
             s = s1
         else:
             s = s1[:run_num]
-        proxy_onoff = get_proxy_switch()
+        proxy_on_off = get_proxy_switch()
         while 1:
-            if proxy_onoff == "ture":
+            if proxy_on_off == "ture":
                 logger.info("代理模式开启")
                 f = get_proxies()
-                logger.info(f"代理列表：{f}")
                 ip_lists = []
                 if len(f) == 0:
                     logger.info("请检查代理")
