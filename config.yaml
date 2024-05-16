@@ -1,21 +1,21 @@
-# 配置文件
+# config.yaml
 
-# apk存放路径文件夹（不要含有中文路径）
+# apk directory
 apk_path: D:\duokong\apkfile
 
-# apk包名
+# apk name
 apk_name: tv.danmaku.bili
 
-# 雷电安装路径
+# ld directory
 ld_path: D:\leidian\LDPlayer9
 
-# 使用代理开关
+# proxy switch
 proxy_switch: false
 
-# 设置启动的设备数量
+# start num
 run_num: 2
 
-# 操作步骤： click：点击(坐标)，sleep：等待时间(秒) ，swipe：滑动屏幕(坐标)
+# step： click：x,y，sleep：s ，swipe：x1,y1,x2,y2
 action:
   step0:
     sleep: 5
@@ -34,12 +34,9 @@ action:
     click: 169,196
   step5:
     sleep: 5
-    swipe: 460, 330, 320, 330
+    click: 349, 293
   step6:
     sleep: 5
-    click: 349, 293
-  step7:
-    sleep: 10
     press: BACK
 
 
