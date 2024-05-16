@@ -56,7 +56,7 @@ if __name__ == "__main__":
         else:
             s = s1[:ldnum]
         proxy_on_off = get_proxy_switch()
-        while Ture:
+        while 1:
             if proxy_on_off == "ture":
                 logger.info("proxy mode on")
                 f = get_proxies()
