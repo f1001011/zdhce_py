@@ -37,7 +37,7 @@ def get_ip_list(plist, dev_num):
 
 if __name__ == "__main__":
     s_ld(ldpath, ldnum)
-    time.sleep(ldnum)
+    time.sleep(ldnum*3)
     start_adb()
     time.sleep(5)
     s1 = devices_list()

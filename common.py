@@ -7,6 +7,8 @@ import yaml
 import os
 from loguru import logger
 
+logger.configure()
+
 
 def devices_list():
     d_list = []
@@ -90,7 +92,7 @@ def get_apk_path():
 def get_ld_path():
     with open(r'./config.yaml', 'r', encoding='utf-8') as f:
         result = yaml.load(f.read(), Loader=yaml.FullLoader)
-    return result['apk_path']
+    return result['ld_path']
 
 
 def get_proxy_switch():
