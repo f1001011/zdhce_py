@@ -1,13 +1,11 @@
 # coding=utf-8
-
+import sys
 import time
 import requests
 from adbutils import adb
 import yaml
 import os
 from loguru import logger
-
-logger.configure()
 
 
 def devices_list():
@@ -52,9 +50,9 @@ class IPro:
     def check_proxy(self):
         result = self.d.shell("settings get global http_proxy")
         if "null" in result:
-            logger.info(f"Proxy setting fail")
+            logger.info(f"Proxy setting fail!")
         else:
-            logger.info(f"Proxy setting ok")
+            logger.info(f"Proxy setting ok!")
 
     def c_proxy(self, ip, port):
         self.set_adb_proxy(ip, port)
@@ -143,7 +141,7 @@ def r_apk(apk_path: str):
     try:
         apk_name = apk_path.split("\\")[-1]
         os.remove(apk_path)
-        logger.info(f"{apk_name} delete completely ")
+        logger.info(f"{apk_name} delete completely !")
     except Exception as e:
         logger.info(e)
 
@@ -151,9 +149,9 @@ def r_apk(apk_path: str):
 def start_adb():
     s = os.system("adb start-server")
     if s == 0:
-        logger.info("start ok")
+        logger.info("start ok!")
     else:
-        logger.info("start error")
+        logger.info("start error!")
 
 
 def check_ip(ipp):
@@ -165,7 +163,7 @@ def check_ip(ipp):
         requests.get(url, headers=headers, proxies=proxies)
         return True
     except Exception as e:
-        logger.warning(f"The proxy IP is invalid！", e)
+        logger.warning(f"The proxy IP is invalid！")
         return False
 
 
@@ -183,5 +181,5 @@ def get_proxies():
             ip_list.append(x)
         return ip_list
     except Exception as e:
-        logger.error(f"The proxy IP address is invalid")
+        logger.error(f"The proxy IP address is invalid !")
         return []

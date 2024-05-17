@@ -5,8 +5,7 @@ from common import *
 directory_name = get_apk_path()
 action = get_action()
 apk_package = get_apk_name()
-ldpath = get_ld_path()
-ldnum = int(get_run_num())
+
 
 
 def run(devices, proxys, apks):
@@ -36,6 +35,8 @@ def get_ip_list(plist, dev_num):
 
 
 if __name__ == "__main__":
+    ldpath = get_ld_path()
+    ldnum = int(get_run_num())
     s_ld(ldpath, ldnum)
     time.sleep(ldnum*3)
     start_adb()
@@ -72,7 +73,7 @@ if __name__ == "__main__":
                     proxys1 = get_ip_list(ip_lists, len(s))
                     dir_list1 = get_apk(directory_name)
                     if len(dir_list1) < 1:
-                        logger.info("complete")
+                        logger.info("complete!")
                         time.sleep(5)
                         break
                     else:
@@ -87,7 +88,7 @@ if __name__ == "__main__":
                 proxys1 = [x for x in [":0"] for _ in range(num_duplicates)]
                 dir_list1 = get_apk(directory_name)
                 if len(dir_list1) < 1:
-                    logger.info("complete")
+                    logger.info("complete!")
                     time.sleep(5)
                     break
                 else:
