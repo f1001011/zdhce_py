@@ -1,5 +1,5 @@
 # coding=utf-8
-import random
+import sys
 import time
 import requests
 from adbutils import adb
@@ -18,7 +18,6 @@ def devices_list():
 def fuc_process(action, ad):
     for k, v in action.items():
         for a, b in v.items():
-            logger.info(f"{a}:{b}")
             if a == "click":
                 x = b.split(",")[0]
                 y = b.split(",")[1]
@@ -37,7 +36,7 @@ def fuc_process(action, ad):
                 ad.d.keyevent("HOME")
 
 
-class IpProxy:
+class IPro:
 
     def __init__(self, devices):
         self.d = adb.device(serial=devices)
@@ -48,43 +47,29 @@ class IpProxy:
     def disable_adb_proxy(self):
         self.d.shell("settings put global http_proxy :0")
 
-    def check_adb_proxy(self):
+    def check_proxy(self):
         result = self.d.shell("settings get global http_proxy")
         if "null" in result:
-            logger.info(f"代理 IP:{result} 设置失败")
+            logger.info(f"Proxy setting fail!")
         else:
-            logger.info(f"代理 IP:{result} 设置成功")
+            logger.info(f"Proxy setting ok!")
 
-    def check_proxy_enabled(self, ip, port):
+    def c_proxy(self, ip, port):
         self.set_adb_proxy(ip, port)
-        logger.info("等待代理设置时间2秒")
         time.sleep(2)
-        self.check_adb_proxy()
+        self.check_proxy()
 
-    def apk_install(self, apk_path):
+    def a_install(self, apk_path):
         try:
             self.d.install(apk_path)
         except Exception as e:
-            logger.info("安装失败", e)
+            logger.info("install fail", e)
 
-    def apk_uninstall(self, apk_name):
+    def a_uninstall(self, apk_name):
         try:
             self.d.uninstall(apk_name)
         except Exception as e:
-            logger.info("卸载失败", e)
-
-    def check_apk_install(self):
-        try:
-            s = self.d.list_packages()
-            name = get_apk_name()
-            for i in range(10):
-                if name in s:
-                    logger.info("安装成功")
-                    break
-                else:
-                    time.sleep(1)
-        except Exception as e:
-            logger.info("未查询到app", e)
+            logger.info("uninstall fail", e)
 
     def press_back(self):
         self.d.keyevent("BACK")
@@ -99,43 +84,49 @@ class IpProxy:
 def get_apk_path():
     with open(r'./config.yaml', 'r', encoding='utf-8') as f:
         result = yaml.load(f.read(), Loader=yaml.FullLoader)
-    s = result['apk_path']
-    return s
+    return result['apk_path']
 
 
 def get_ld_path():
     with open(r'./config.yaml', 'r', encoding='utf-8') as f:
         result = yaml.load(f.read(), Loader=yaml.FullLoader)
-    s = result['ld_path']
-    return s
+    return result['ld_path']
 
 
 def get_proxy_switch():
     with open(r'./config.yaml', 'r', encoding='utf-8') as f:
         result = yaml.load(f.read(), Loader=yaml.FullLoader)
-    s = result['proxy_switch']
-    return s
+    return result['proxy_switch']
+
+
+def s_ld(path, count):
+    lists = os.popen(f"{path}\\ldconsole.exe list").read().split("\n")
+    if count > len(lists) - 1:
+        for i in range(1, len(lists) - 1):
+            os.popen(f"{path}\\ldconsole.exe launch --index {i}")
+            time.sleep(1)
+    else:
+        for i in range(1, count + 1):
+            os.popen(f"{path}\\ldconsole.exe launch --index {i}")
+            time.sleep(1)
 
 
 def get_run_num():
     with open(r'./config.yaml', 'r', encoding='utf-8') as f:
         result = yaml.load(f.read(), Loader=yaml.FullLoader)
-    s = result['run_num']
-    return s
+    return result['run_num']
 
 
 def get_apk_name():
     with open(r'./config.yaml', 'r', encoding='utf-8') as f:
         result = yaml.load(f.read(), Loader=yaml.FullLoader)
-    s = result['apk_name']
-    return s
+    return result['apk_name']
 
 
 def get_action():
     with open(r'./config.yaml', 'r', encoding='utf-8') as f:
         result = yaml.load(f.read(), Loader=yaml.FullLoader)
-    s = result['action']
-    return s
+    return result['action']
 
 
 def get_apk(directory_name):
@@ -146,42 +137,33 @@ def get_apk(directory_name):
         logger.info(e)
 
 
-def remove_apk(apk_path: str):
+def r_apk(apk_path: str):
     try:
         apk_name = apk_path.split("\\")[-1]
         os.remove(apk_path)
-        logger.info(f"{apk_name},删除完成")
+        logger.info(f"{apk_name} delete completely !")
     except Exception as e:
         logger.info(e)
-
-
-def get_proxy(proxy_list: list):
-    return random.choice(proxy_list)
 
 
 def start_adb():
     s = os.system("adb start-server")
     if s == 0:
-        logger.info("adb启动成功")
+        logger.info("start ok!")
     else:
-        logger.info("adb启动失败")
+        logger.info("start error!")
 
 
 def check_ip(ipp):
     proxies = {'http': ipp, 'https': ipp}
-    url = "http://www.bilibili.com"
+    url = "http://www.ip138.com"
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'}
     try:
-        response = requests.get(url, headers=headers, proxies=proxies, timeout=1)
-        logger.info(response.status_code)
+        requests.get(url, headers=headers, proxies=proxies)
         return True
-        # if response.status_code == 200:
-        #     return True
-        # else:
-        #     return False
     except Exception as e:
-        logger.warning(f"请求失败，代理IP无效！", e)
+        logger.warning(f"The proxy IP is invalid！")
         return False
 
 
@@ -199,4 +181,5 @@ def get_proxies():
             ip_list.append(x)
         return ip_list
     except Exception as e:
-        logger.error(f"代理IP获取失败！{e}")
+        logger.error(f"The proxy IP address is invalid !")
+        return []
